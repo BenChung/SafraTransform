@@ -169,6 +169,29 @@ public class Main {
 		//Compute # of seconds elapsed
 		float rt = (System.nanoTime() - st)/1000000000.0f;
 
+		//Construct Rabin pairs
+		Marker helper = new Marker();
+		List<Pair<HashSet<SafraTree>,HashSet<SafraTree>>> pairs = new LinkedList<>();
+		//For every state
+		for (int i = 0; i < source.nStates; i++) {
+			//Create L and R sets
+			HashSet<SafraTree> L = new HashSet<>(), R = new HashSet<>();
+
+			//And check all states in the Rabin automata for inclusion
+			for (SafraTree state : transitions.keySet()) {
+				final int ii = i;
+				if (state.getNode().<Boolean>map(node -> helper.inL(node, ii)).orElse(false)) {
+					L.add(state);
+				}
+				if (state.getNode().<Boolean>map(node -> helper.inR(node, ii)).orElse(false)){
+					R.add(state);
+				}
+			}
+
+			//Save them
+			pairs.add(new Pair<>(L,R));
+		}
+
 		//Result
 		System.out.println("time: " + rt + " states: " + transitions.size());
 	}
